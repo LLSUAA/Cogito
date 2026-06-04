@@ -17,8 +17,6 @@ export type PickResult =
   | { canceled: true }
   | { canceled: false; assets: FileMeta[] };
 
-const SUPPORTED_TYPES = ['text/plain', 'application/epub+zip'] as const;
-
 /**
  * 唤起系统文件选择器，筛选 TXT/EPUB 文件，返回文件元数据与缓存副本路径。
  *
@@ -29,8 +27,8 @@ const SUPPORTED_TYPES = ['text/plain', 'application/epub+zip'] as const;
 export async function pickLocalBook(): Promise<PickResult> {
   try {
     const result = await DocumentPicker.getDocumentAsync({
-      type: [...SUPPORTED_TYPES],
-      copyToCacheDirectory: true,
+      type: ['*/*'], // 放开所有 MIME 限制，防止安卓系统将某些 EPUB 误判
+      copyToCacheDirectory: true, // 确保文件被官方 API 安全转入本地沙盒，获取 file:// 路径
     });
 
     if (result.canceled) {
